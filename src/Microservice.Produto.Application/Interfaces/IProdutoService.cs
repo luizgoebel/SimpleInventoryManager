@@ -10,8 +10,3 @@ public interface IProdutoService
     Task<ProdutoDto?> AtualizarAsync(int id, ProdutoAtualizacaoDto dto);
     Task<bool> DeletarAsync(int id);
 }
-
-public interface IEstoqueClient
-{
-    Task CriarEstoqueInicialAsync(int produtoId);
-}

@@ -1,5 +1,3 @@
-using Microservice.Produto.Domain.Entities;
-
 namespace Microservice.Produto.Application.Interfaces;
 
 public interface IRepository<T> where T : class
@@ -10,5 +8,3 @@ public interface IRepository<T> where T : class
     Task UpdateAsync(T entity);
     Task DeleteAsync(T entity);
 }
-
-public interface IProdutoRepository : IRepository<Produto> { }

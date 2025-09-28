@@ -1,7 +1,6 @@
 using AutoMapper;
 using Microservice.Produto.Application.DTOs;
 using Microservice.Produto.Application.Interfaces;
-using Microservice.Produto.Domain.Entities;
 
 namespace Microservice.Produto.Application.Services;
 
@@ -23,7 +22,7 @@ public class ProdutoService : IProdutoService
         if (string.IsNullOrWhiteSpace(dto.Nome)) throw new ArgumentException("Nome é obrigatório");
         if (dto.Preco <= 0) throw new ArgumentException("Preço deve ser maior que zero");
 
-        var entidade = _mapper.Map<Produto>(dto);
+        var entidade = _mapper.Map<Microservice.Produto.Domain.Entities.Produto>(dto);
         await _repo.AddAsync(entidade);
 
         // Chamar estoque para criar registro inicial
@@ -54,7 +53,6 @@ public class ProdutoService : IProdutoService
         entidade.Nome = dto.Nome;
         entidade.Preco = dto.Preco;
         entidade.Descricao = dto.Descricao;
-        entidade.AtualizadoEm = DateTime.UtcNow;
 
         await _repo.UpdateAsync(entidade);
         return _mapper.Map<ProdutoDto>(entidade);
