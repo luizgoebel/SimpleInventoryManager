@@ -1,0 +1,27 @@
+using System.Net.Http.Json;
+using Microservice.Produto.Application.Interfaces;
+
+namespace Microservice.Produto.Application.Services;
+
+public class EstoqueClient : IEstoqueClient
+{
+    private readonly HttpClient _httpClient;
+    public EstoqueClient(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
+
+    public async Task CriarEstoqueInicialAsync(int produtoId)
+    {
+        var payload = new { ProdutoId = produtoId, Quantidade = 0 };
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/estoques/entrada", payload);
+            response.EnsureSuccessStatusCode();
+        }
+        catch
+        {
+            // Logar falha de comunicação (omitted)
+        }
+    }
+}
