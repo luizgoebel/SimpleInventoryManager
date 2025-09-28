@@ -1,7 +1,6 @@
 using AutoMapper;
 using Microservice.Estoque.Application.DTOs;
 using Microservice.Estoque.Application.Interfaces;
-using Microservice.Estoque.Domain.Entities;
 
 namespace Microservice.Estoque.Application.Services;
 
@@ -20,7 +19,7 @@ public class EstoqueService : IEstoqueService
     {
         var existente = await _repo.GetByProdutoIdAsync(produtoId);
         if (existente != null) return true;
-        var estoque = new Estoque { ProdutoId = produtoId, Quantidade = 0 };
+        var estoque = new Microservice.Estoque.Domain.Entities.Estoque { ProdutoId = produtoId, Quantidade = 0 };
         await _repo.AddAsync(estoque);
         return true;
     }
@@ -37,11 +36,10 @@ public class EstoqueService : IEstoqueService
         var existente = await _repo.GetByProdutoIdAsync(dto.ProdutoId);
         if (existente == null)
         {
-            existente = new Estoque { ProdutoId = dto.ProdutoId, Quantidade = 0 };
+            existente = new Microservice.Estoque.Domain.Entities.Estoque { ProdutoId = dto.ProdutoId, Quantidade = 0 };
             await _repo.AddAsync(existente);
         }
         existente.Quantidade += dto.Quantidade;
-        existente.AtualizadoEm = DateTime.UtcNow;
         await _repo.UpdateAsync(existente);
         return true;
     }
@@ -53,7 +51,6 @@ public class EstoqueService : IEstoqueService
         if (existente == null) return false;
         if (existente.Quantidade - dto.Quantidade < 0) return false;
         existente.Quantidade -= dto.Quantidade;
-        existente.AtualizadoEm = DateTime.UtcNow;
         await _repo.UpdateAsync(existente);
         return true;
     }

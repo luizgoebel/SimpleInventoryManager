@@ -8,8 +8,3 @@ public interface IRepository<T> where T : class
     Task UpdateAsync(T entity);
     Task DeleteAsync(T entity);
 }
-
-public interface IEstoqueRepository : IRepository<Domain.Entities.Estoque>
-{
-    Task<Domain.Entities.Estoque?> GetByProdutoIdAsync(int produtoId);
-}

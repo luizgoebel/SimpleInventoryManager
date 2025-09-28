@@ -7,14 +7,26 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configuração do DbContext para usar MySQL ou InMemory conforme configuração
 builder.Services.AddDbContext<ProdutoDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    var useInMemory = builder.Configuration.GetValue<bool>("UseInMemoryDatabase");
+    if (useInMemory)
+    {
+        options.UseInMemoryDatabase("ProdutoDb");
+    }
+    else
+    {
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' não configurada.");
+
+        var serverVersion = ServerVersion.AutoDetect(connectionString);
+        options.UseMySql(connectionString, serverVersion);
+    }
+});
 
 builder.Services.AddAutoMapper(typeof(Microservice.Produto.Application.Mapping.ProdutoProfile).Assembly);
 
@@ -28,7 +40,6 @@ builder.Services.AddHttpClient<IEstoqueClient, EstoqueClient>(client =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

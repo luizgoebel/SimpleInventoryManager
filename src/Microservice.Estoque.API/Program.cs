@@ -7,14 +7,12 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Banco de dados em memória
 builder.Services.AddDbContext<EstoqueDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseInMemoryDatabase("EstoqueDb"));
 
 builder.Services.AddAutoMapper(typeof(Microservice.Estoque.Application.Mapping.EstoqueProfile).Assembly);
 
@@ -23,7 +21,13 @@ builder.Services.AddScoped<IEstoqueService, EstoqueService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Garantir criação do "banco" em memória (opcional)
+using (var scope = app.Services.CreateScope())
+{
+    var ctx = scope.ServiceProvider.GetRequiredService<EstoqueDbContext>();
+    ctx.Database.EnsureCreated();
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -31,7 +35,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.MapControllers();
-
 app.Run();

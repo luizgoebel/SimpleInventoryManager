@@ -13,6 +13,7 @@ public class EstoqueDbContext : DbContext
     {
         modelBuilder.Entity<Microservice.Estoque.Domain.Entities.Estoque>(e =>
         {
+            e.ToTable("Estoques");
             e.HasKey(x => x.Id);
             e.HasIndex(x => x.ProdutoId).IsUnique();
             e.Property(x => x.Quantidade).IsRequired();

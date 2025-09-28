@@ -1,0 +1,19 @@
+[
+  {
+    "Name": "Novo Perfil",
+    "Projects": [
+      {
+        "Path": "src\\Microservice.Estoque.API\\Microservice.Estoque.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "src\\Microservice.Produto.API\\Microservice.Produto.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "src\\Gateway.API\\Gateway.API.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
