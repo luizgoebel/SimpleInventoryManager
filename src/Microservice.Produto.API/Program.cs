@@ -13,19 +13,8 @@ builder.Services.AddSwaggerGen();
 // Configuração do DbContext para usar MySQL ou InMemory conforme configuração
 builder.Services.AddDbContext<ProdutoDbContext>(options =>
 {
-    var useInMemory = builder.Configuration.GetValue<bool>("UseInMemoryDatabase");
-    if (useInMemory)
-    {
         options.UseInMemoryDatabase("ProdutoDb");
-    }
-    else
-    {
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' não configurada.");
-
-        var serverVersion = ServerVersion.AutoDetect(connectionString);
-        options.UseMySql(connectionString, serverVersion);
-    }
+        return;
 });
 
 builder.Services.AddAutoMapper(typeof(Microservice.Produto.Application.Mapping.ProdutoProfile).Assembly);
