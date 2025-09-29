@@ -13,6 +13,10 @@
       {
         "Path": "src\\Gateway.API\\Gateway.API.csproj",
         "Action": "Start"
+      },
+      {
+        "Path": "src\\Microservice.Pedido.API\\Microservice.Pedido.API.csproj",
+        "Action": "Start"
       }
     ]
   }
