@@ -1,6 +1,6 @@
 [
   {
-    "Name": "Novo Perfil",
+    "Name": "RodarTodosServicos",
     "Projects": [
       {
         "Path": "src\\Microservice.Estoque.API\\Microservice.Estoque.API.csproj",
