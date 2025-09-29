@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microservice.Produto.Application.DTOs;
 using Microservice.Produto.Application.Interfaces;
+using Shared.Application.Exceptions;
 
 namespace Microservice.Produto.Application.Services;
 
@@ -12,57 +13,52 @@ public class ProdutoService : IProdutoService
 
     public ProdutoService(IProdutoRepository repo, IMapper mapper, IEstoqueClient estoqueClient)
     {
-        _repo = repo;
-        _mapper = mapper;
-        _estoqueClient = estoqueClient;
+        this._repo = repo;
+        this._mapper = mapper;
+        this._estoqueClient = estoqueClient;
     }
 
     public async Task<ProdutoDto> CriarProdutoAsync(ProdutoCriacaoDto dto)
     {
-        if (string.IsNullOrWhiteSpace(dto.Nome)) throw new ArgumentException("Nome é obrigatório");
-        if (dto.Preco <= 0) throw new ArgumentException("Preço deve ser maior que zero");
+        Domain.Entities.Produto produto = this._mapper.Map<Microservice.Produto.Domain.Entities.Produto>(dto);
+        produto.Validar();
 
-        var entidade = _mapper.Map<Microservice.Produto.Domain.Entities.Produto>(dto);
-        await _repo.AddAsync(entidade);
+        await this._repo.AddAsync(produto);
+        await this._estoqueClient.CriarEstoqueInicialAsync(produto.Id);
 
-        // Chamar estoque para criar registro inicial
-        await _estoqueClient.CriarEstoqueInicialAsync(entidade.Id);
-
-        return _mapper.Map<ProdutoDto>(entidade);
+        return this._mapper.Map<ProdutoDto>(produto);
     }
 
     public async Task<ProdutoDto?> GetProdutoByIdAsync(int id)
     {
-        var entidade = await _repo.GetByIdAsync(id);
-        return entidade == null ? null : _mapper.Map<ProdutoDto>(entidade);
+        Domain.Entities.Produto? produto = await this._repo.GetByIdAsync(id);
+        return produto == null ? null : this._mapper.Map<ProdutoDto>(produto);
     }
 
     public async Task<IEnumerable<ProdutoDto>> GetTodosAsync()
     {
-        var itens = await _repo.GetAllAsync();
-        return itens.Select(_mapper.Map<ProdutoDto>);
+        IEnumerable<Domain.Entities.Produto> produtos = await this._repo.GetAllAsync();
+        return produtos.Select(this._mapper.Map<ProdutoDto>);
     }
 
     public async Task<ProdutoDto?> AtualizarAsync(int id, ProdutoAtualizacaoDto dto)
     {
-        var entidade = await _repo.GetByIdAsync(id);
-        if (entidade == null) return null;
-        if (string.IsNullOrWhiteSpace(dto.Nome)) throw new ArgumentException("Nome é obrigatório");
-        if (dto.Preco <= 0) throw new ArgumentException("Preço deve ser maior que zero");
+        Domain.Entities.Produto produto = await this._repo.GetByIdAsync(id) ??
+            throw new ServiceException("Ocorreu um erro no servidor.");
 
-        entidade.Nome = dto.Nome;
-        entidade.Preco = dto.Preco;
-        entidade.Descricao = dto.Descricao;
+        produto.Validar();
+        produto.Alterar(dto.Nome, dto.Preco, dto.Descricao);
 
-        await _repo.UpdateAsync(entidade);
-        return _mapper.Map<ProdutoDto>(entidade);
+        await this._repo.UpdateAsync(produto);
+        return this._mapper.Map<ProdutoDto>(produto);
     }
 
     public async Task<bool> DeletarAsync(int id)
     {
-        var entidade = await _repo.GetByIdAsync(id);
-        if (entidade == null) return false;
-        await _repo.DeleteAsync(entidade);
+        Domain.Entities.Produto? produto = await this._repo.GetByIdAsync(id) ??
+            throw new ServiceException("Produto não encontrado.");
+
+        await this._repo.DeleteAsync(produto);
         return true;
     }
 }
