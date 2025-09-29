@@ -13,10 +13,10 @@ public class EstoqueClient : IEstoqueClient
 
     public async Task CriarEstoqueInicialAsync(int produtoId)
     {
-        var payload = new { ProdutoId = produtoId, Quantidade = 0 };
+        var estoqueInicial = new { ProdutoId = produtoId, Quantidade = 0 };
         try
         {
-            var response = await this._httpClient.PostAsJsonAsync("api/estoques/entrada", payload);
+            var response = await this._httpClient.PostAsJsonAsync("api/estoques/entrada", estoqueInicial);
             response.EnsureSuccessStatusCode();
         }
         catch
