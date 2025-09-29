@@ -15,7 +15,7 @@ public class ProdutoController : ControllerBase
         _service = service;
     }
 
-    [HttpPost]
+    [HttpPost("criar")]
     public async Task<IActionResult> Post([FromBody] ProdutoCriacaoDto dto)
     {
         try
