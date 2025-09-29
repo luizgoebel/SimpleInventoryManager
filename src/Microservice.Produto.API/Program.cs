@@ -12,10 +12,7 @@ builder.Services.AddSwaggerGen();
 
 // Configuração do DbContext para usar MySQL ou InMemory conforme configuração
 builder.Services.AddDbContext<ProdutoDbContext>(options =>
-{
-        options.UseInMemoryDatabase("ProdutoDb");
-        return;
-});
+        options.UseInMemoryDatabase("ProdutoDb"));
 
 builder.Services.AddAutoMapper(typeof(Microservice.Produto.Application.Mapping.ProdutoProfile).Assembly);
 
