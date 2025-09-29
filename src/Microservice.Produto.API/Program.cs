@@ -29,6 +29,13 @@ builder.Services.AddHttpClient<IEstoqueClient, EstoqueClient>(client =>
 
 var app = builder.Build();
 
+// Garantir criação do "banco" em memória (opcional)
+using (var scope = app.Services.CreateScope())
+{
+    var ctx = scope.ServiceProvider.GetRequiredService<ProdutoDbContext>();
+    ctx.Database.EnsureCreated();
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
