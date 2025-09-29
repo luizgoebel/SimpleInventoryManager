@@ -1,5 +1,6 @@
-﻿using BookCatalog.Core.Exceptions;
-using BookCatalog.Model.Entities;
+﻿using Microsoft.AspNetCore.Http;
+using Shared.Application.Exceptions;
+using Shared.Domain.Entities;
 
 namespace BookCatalog.Api.Middlewares;
 
