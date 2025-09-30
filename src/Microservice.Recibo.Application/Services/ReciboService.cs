@@ -1,6 +1,6 @@
+using AutoMapper;
 using Microservice.Recibo.Application.DTOs;
 using Microservice.Recibo.Application.Interfaces;
-using Microservice.Recibo.Domain.Entities;
 using Shared.Application.Exceptions;
 
 namespace Microservice.Recibo.Application.Services;
@@ -8,34 +8,38 @@ namespace Microservice.Recibo.Application.Services;
 public class ReciboService : IReciboService
 {
     private readonly IReciboRepository _repo;
+    private readonly IMapper _mapper;
 
-    public ReciboService(IReciboRepository repo) => _repo = repo;
+    public ReciboService(IReciboRepository repo, IMapper mapper)
+    {
+        this._repo = repo;
+        this._mapper = mapper;
+    }
 
     public async Task<ReciboDto> GerarPorFaturaAsync(int faturaId, string numeroFatura, decimal valorTotal)
     {
-        var existente = await _repo.GetByFaturaIdAsync(faturaId);
-        if (existente != null) throw new ServiceException("Recibo já existe.");
-
+        Domain.Entities.Recibo? reciboExiste = await this._repo.GetByFaturaIdAsync(faturaId);
+        if (reciboExiste != null) throw new ServiceException("Recibo existente.");
         string numeroRecibo = GerarNumeroRecibo(faturaId, numeroFatura);
-        Recibo recibo = new(faturaId, numeroRecibo, valorTotal);
+        Domain.Entities.Recibo recibo = new(faturaId, numeroRecibo, valorTotal);
         recibo.Validar();
-        await _repo.AddAsync(recibo);
-        return Map(recibo);
+        await this._repo.AddAsync(recibo);
+        return _mapper.Map<ReciboDto>(recibo);
     }
 
     public async Task<ReciboDto?> ObterPorFaturaAsync(int faturaId)
     {
-        var recibo = await _repo.GetByFaturaIdAsync(faturaId);
-        return recibo == null ? null : Map(recibo);
+        Domain.Entities.Recibo? recibo = await this._repo.GetByFaturaIdAsync(faturaId) ??
+            throw new ServiceException("Recibo não gerado.");
+        return _mapper.Map<ReciboDto>(recibo);
     }
 
     public async Task<ReciboDto?> ObterPorIdAsync(int id)
     {
-        var recibo = await _repo.GetByIdAsync(id);
-        return recibo == null ? null : Map(recibo);
+        Domain.Entities.Recibo? recibo = await this._repo.GetByIdAsync(id) ??
+            throw new ServiceException("Recibo não gerado.");
+        return _mapper.Map<ReciboDto>(recibo);
     }
-
-    private ReciboDto Map(Recibo r) => new(r.Id, r.Numero, r.FaturaId, r.DataEmissao, r.ValorTotal);
 
     private string GerarNumeroRecibo(int faturaId, string numeroFatura)
         => $"RC-{DateTime.UtcNow:yyyyMMdd}-{faturaId}-{numeroFatura.Split('-').Last()}";

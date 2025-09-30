@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
+using Microservice.Recibo.Application.DTOs;
 using Microservice.Recibo.Application.Interfaces;
-using Shared.Application.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Microservice.Recibo.API.Controllers;
 
@@ -10,35 +10,30 @@ public class RecibosController : ControllerBase
 {
     private readonly IReciboService _service;
 
-    public RecibosController(IReciboService service) => _service = service;
-
-    public record EmissaoReciboRequest(int FaturaId, string NumeroFatura, decimal ValorTotal);
+    public RecibosController(IReciboService service)
+    {
+        this._service = service;
+    }
 
     [HttpPost("emissao")]
-    public async Task<IActionResult> Emitir([FromBody] EmissaoReciboRequest request)
+    public async Task<IActionResult> Emitir([FromBody] EmissaoReciboDto emissaoReciboDto)
     {
-        try
-        {
-            var dto = await _service.GerarPorFaturaAsync(request.FaturaId, request.NumeroFatura, request.ValorTotal);
-            return CreatedAtAction(nameof(GetPorFatura), new { faturaId = request.FaturaId }, dto);
-        }
-        catch (ServiceException ex)
-        {
-            return BadRequest(new { erro = ex.Message });
-        }
+        ReciboDto reciboDto =
+            await this._service.GerarPorFaturaAsync(emissaoReciboDto.FaturaId, emissaoReciboDto.NumeroFatura, emissaoReciboDto.ValorTotal);
+        return CreatedAtAction(nameof(GetPorFatura), new { faturaId = emissaoReciboDto.FaturaId }, reciboDto);
     }
 
     [HttpGet("fatura/{faturaId:int}")]
     public async Task<IActionResult> GetPorFatura(int faturaId)
     {
-        var dto = await _service.ObterPorFaturaAsync(faturaId);
-        return dto == null ? NotFound() : Ok(dto);
+        ReciboDto? reciboDto = await this._service.ObterPorFaturaAsync(faturaId);
+        return Ok(reciboDto);
     }
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
-        var dto = await _service.ObterPorIdAsync(id);
-        return dto == null ? NotFound() : Ok(dto);
+        ReciboDto? reciboDto = await this._service.ObterPorIdAsync(id);
+        return Ok(reciboDto);
     }
 }

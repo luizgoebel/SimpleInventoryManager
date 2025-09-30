@@ -1,4 +1,8 @@
-using Microservice.Recibo.API.Extensions;
+using Microservice.Recibo.Application.Interfaces;
+using Microservice.Recibo.Application.Services;
+using Microservice.Recibo.Infrastructure.Data.Context;
+using Microservice.Recibo.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,9 +10,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddReciboModule();
+builder.Services.AddDbContext<ReciboDbContext>(o => o.UseInMemoryDatabase("ReciboDb"));
+
+builder.Services.AddAutoMapper(typeof(Microservice.Recibo.Application.Mapping.ReciboProfile).Assembly);
+
+builder.Services.AddScoped<IReciboService, ReciboService>();
+builder.Services.AddSingleton<IReciboRepository, ReciboRepository>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var ctx = scope.ServiceProvider.GetRequiredService<ReciboDbContext>();
+    ctx.Database.EnsureCreated();
+}
+
 
 if (app.Environment.IsDevelopment())
 {

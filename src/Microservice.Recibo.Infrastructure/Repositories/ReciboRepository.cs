@@ -1,22 +1,24 @@
 using Microservice.Recibo.Application.Interfaces;
-using Microservice.Recibo.Domain.Entities;
+using Microservice.Recibo.Infrastructure.Data.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace Microservice.Recibo.Infrastructure.Repositories;
 
 public class ReciboRepository : IReciboRepository
 {
-    private static readonly List<Recibo> _db = new();
+    private readonly ReciboDbContext _ctx;
 
-    public Task AddAsync(Recibo recibo)
+    public ReciboRepository(ReciboDbContext ctx) => _ctx = ctx;
+
+    public async Task AddAsync(Domain.Entities.Recibo recibo)
     {
-        recibo.Id = _db.Count + 1;
-        _db.Add(recibo);
-        return Task.CompletedTask;
+        await _ctx.Recibos.AddAsync(recibo);
+        await _ctx.SaveChangesAsync();
     }
 
-    public Task<Recibo?> GetByFaturaIdAsync(int faturaId)
-        => Task.FromResult(_db.FirstOrDefault(r => r.FaturaId == faturaId));
+    public Task<Domain.Entities.Recibo?> GetByFaturaIdAsync(int faturaId)
+        => _ctx.Recibos.AsNoTracking().FirstOrDefaultAsync(r => r.FaturaId == faturaId);
 
-    public Task<Recibo?> GetByIdAsync(int id)
-        => Task.FromResult(_db.FirstOrDefault(r => r.Id == id));
+    public Task<Domain.Entities.Recibo?> GetByIdAsync(int id)
+        => _ctx.Recibos.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
 }

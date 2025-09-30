@@ -23,6 +23,6 @@ public class Recibo : BaseModel<Recibo>
     {
         if (FaturaId <= 0) throw new DomainException("Fatura inválida.");
         if (string.IsNullOrWhiteSpace(Numero)) throw new DomainException("Número inválido.");
-        if (ValorTotal < 0) throw new DomainException("Valor inválido.");
+        if (ValorTotal < 0) throw new DomainException("Valor total inválido.");
     }
 }
