@@ -10,9 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configuração do DbContext para usar MySQL ou InMemory conforme configuração
-builder.Services.AddDbContext<ProdutoDbContext>(options =>
-        options.UseInMemoryDatabase("ProdutoDb"));
+builder.Services.AddDbContext<ProdutoDbContext>(o => o.UseInMemoryDatabase("ProdutoDb"));
 
 builder.Services.AddAutoMapper(typeof(Microservice.Produto.Application.Mapping.ProdutoProfile).Assembly);
 
@@ -26,7 +24,6 @@ builder.Services.AddHttpClient<IEstoqueClient, EstoqueClient>(client =>
 
 var app = builder.Build();
 
-// Garantir criação do "banco" em memória (opcional)
 using (var scope = app.Services.CreateScope())
 {
     var ctx = scope.ServiceProvider.GetRequiredService<ProdutoDbContext>();

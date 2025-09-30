@@ -3,6 +3,10 @@
     "Name": "RodarTodosServicos",
     "Projects": [
       {
+        "Path": "src\\Microservice.Pedido.API\\Microservice.Pedido.API.csproj",
+        "Action": "Start"
+      },
+      {
         "Path": "src\\Microservice.Estoque.API\\Microservice.Estoque.API.csproj",
         "Action": "Start"
       },
@@ -12,10 +16,6 @@
       },
       {
         "Path": "src\\Gateway.API\\Gateway.API.csproj",
-        "Action": "Start"
-      },
-      {
-        "Path": "src\\Microservice.Pedido.API\\Microservice.Pedido.API.csproj",
         "Action": "Start"
       }
     ]

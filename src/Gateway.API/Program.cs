@@ -14,10 +14,11 @@ var app = builder.Build();
 app.MapGet("/", () => Results.Ok(new
 {
     Message = "Gateway API running",
-    Swagger = new
+    Routes = new[]
     {
-        Produtos = "/swagger/produtos/index.html",
-        Estoques = "/swagger/estoques/index.html"
+        "/api/produtos/*",
+        "/api/estoques/*",
+        "/api/pedidos/*"
     }
 }));
 
