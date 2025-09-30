@@ -28,6 +28,7 @@ public class PedidoService : IPedidoService
 
         foreach (PedidoItemCriacaoDto item in dto.Itens)
         {
+            if (item.ProdutoId <= 0) throw new ServiceException("Por favor, inserir produto válido no pedido.");
             if (item.Quantidade <= 0) throw new ServiceException("Quantidade inválida.");
             if (item.PrecoUnitario < 0) throw new ServiceException("Preço inválido.");
             pedido.AdicionarItem(item.ProdutoId, item.Quantidade, item.PrecoUnitario);
