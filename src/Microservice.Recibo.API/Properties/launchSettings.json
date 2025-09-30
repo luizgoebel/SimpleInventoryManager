@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Microservice.Recibo.API": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:62216;http://localhost:62217"
+    }
+  }
+}
