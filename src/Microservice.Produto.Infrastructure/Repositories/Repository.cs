@@ -33,5 +33,6 @@ public class Repository<T> : IRepository<T> where T : class
     {
         _set.Update(entity);
         await _ctx.SaveChangesAsync();
+        await Task.CompletedTask;
     }
 }
