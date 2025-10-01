@@ -3,6 +3,11 @@
     "Name": "RodarTodosServicos",
     "Projects": [
       {
+        "Path": "Gateway.API\\Gateway.API.csproj",
+        "Action": "Start",
+        "DebugTarget": "ApiGateway"
+      },
+      {
         "Path": "src\\Microservice.Pedido.API\\Microservice.Pedido.API.csproj",
         "Action": "Start",
         "DebugTarget": "PedidoApi"
