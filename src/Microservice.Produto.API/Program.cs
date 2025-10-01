@@ -3,6 +3,7 @@ using Microservice.Produto.Application.Services;
 using Microservice.Produto.Infrastructure.Data.Context;
 using Microservice.Produto.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microservice.Produto.API.Data.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,7 @@ using (var scope = app.Services.CreateScope())
 {
     var ctx = scope.ServiceProvider.GetRequiredService<ProdutoDbContext>();
     ctx.Database.EnsureCreated();
+    await ctx.SeedAsync();
 }
 
 if (app.Environment.IsDevelopment())

@@ -5,6 +5,7 @@ using Microservice.Pedido.Application.Services;
 using Microservice.Pedido.Infrastructure.Data.Context;
 using Microservice.Pedido.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microservice.Pedido.API.Data.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,7 @@ using (var scope = app.Services.CreateScope())
 {
     var ctx = scope.ServiceProvider.GetRequiredService<PedidoDbContext>();
     ctx.Database.EnsureCreated();
+    await ctx.SeedAsync();
 }
 
 if (app.Environment.IsDevelopment())

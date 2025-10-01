@@ -1,9 +1,8 @@
-using System.Linq;
 using AutoMapper;
 using Microservice.Faturamento.Application.DTOs;
 using Microservice.Faturamento.Domain.Entities;
 
-namespace Microservice.Estoque.Application.Mapping;
+namespace Microservice.Faturamento.Application.Mapping;
 
 public class FaturamentoProfile : Profile
 {

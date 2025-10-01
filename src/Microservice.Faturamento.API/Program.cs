@@ -1,3 +1,4 @@
+using Microservice.Faturamento.API.Data.Seed;
 using Microservice.Faturamento.Application.Clients;
 using Microservice.Faturamento.Application.Interfaces;
 using Microservice.Faturamento.Application.Services;
@@ -10,6 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAutoMapper(typeof(Microservice.Faturamento.Application.Mapping.FaturamentoProfile).Assembly);
 
 builder.Services.AddDbContext<FaturaDbContext>(o => o.UseInMemoryDatabase("FaturaDb"));
 
@@ -31,6 +34,7 @@ using (var scope = app.Services.CreateScope())
 {
     var ctx = scope.ServiceProvider.GetRequiredService<FaturaDbContext>();
     ctx.Database.EnsureCreated();
+    await ctx.SeedAsync();
 }
 
 if (app.Environment.IsDevelopment())

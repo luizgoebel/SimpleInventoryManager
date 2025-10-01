@@ -3,6 +3,7 @@ using Microservice.Estoque.Application.Services;
 using Microservice.Estoque.Infrastructure.Data.Context;
 using Microservice.Estoque.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microservice.Estoque.API.Data.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,7 @@ using (var scope = app.Services.CreateScope())
 {
     var ctx = scope.ServiceProvider.GetRequiredService<EstoqueDbContext>();
     ctx.Database.EnsureCreated();
+    await ctx.SeedAsync();
 }
 
 if (app.Environment.IsDevelopment())

@@ -4,19 +4,28 @@
     "Projects": [
       {
         "Path": "src\\Microservice.Pedido.API\\Microservice.Pedido.API.csproj",
-        "Action": "Start"
+        "Action": "Start",
+        "DebugTarget": "PedidoApi"
       },
       {
         "Path": "src\\Microservice.Estoque.API\\Microservice.Estoque.API.csproj",
-        "Action": "Start"
+        "Action": "Start",
+        "DebugTarget": "EstoqueApi"
       },
       {
         "Path": "src\\Microservice.Produto.API\\Microservice.Produto.API.csproj",
-        "Action": "Start"
+        "Action": "Start",
+        "DebugTarget": "ProdutoApi"
       },
       {
-        "Path": "src\\Gateway.API\\Gateway.API.csproj",
-        "Action": "Start"
+        "Path": "src\\Microservice.Faturamento.API\\Microservice.Faturamento.API.csproj",
+        "Action": "Start",
+        "DebugTarget": "FaturamentoApi"
+      },
+      {
+        "Path": "src\\Microservice.Recibo.API\\Microservice.Recibo.API.csproj",
+        "Action": "Start",
+        "DebugTarget": "ReciboApi"
       }
     ]
   }

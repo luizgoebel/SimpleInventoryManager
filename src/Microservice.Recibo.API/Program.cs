@@ -3,6 +3,7 @@ using Microservice.Recibo.Application.Services;
 using Microservice.Recibo.Infrastructure.Data.Context;
 using Microservice.Recibo.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microservice.Recibo.API.Data.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,7 @@ using (var scope = app.Services.CreateScope())
 {
     var ctx = scope.ServiceProvider.GetRequiredService<ReciboDbContext>();
     ctx.Database.EnsureCreated();
+    await ctx.SeedAsync();
 }
 
 
