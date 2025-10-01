@@ -1,5 +1,7 @@
+using AutoMapper;
 using Microservice.Faturamento.Application.DTOs;
 using Microservice.Faturamento.Application.Interfaces;
+using Microservice.Faturamento.Application.Models;
 using Microservice.Faturamento.Domain.Entities;
 using Shared.Application.Exceptions;
 
@@ -10,64 +12,54 @@ public class FaturamentoService : IFaturamentoService
     private readonly IFaturaRepository _repo;
     private readonly IPedidoConsultaClient _pedidoClient;
     private readonly IReciboEmissaoClient _reciboClient;
+    private readonly IMapper _mapper;
 
     public FaturamentoService(
         IFaturaRepository repo,
         IPedidoConsultaClient pedidoClient,
-        IReciboEmissaoClient reciboClient)
+        IReciboEmissaoClient reciboClient,
+        IMapper mapper)
     {
-        _repo = repo;
-        _pedidoClient = pedidoClient;
-        _reciboClient = reciboClient;
+        this._repo = repo;
+        this._pedidoClient = pedidoClient;
+        this._reciboClient = reciboClient;
+        this._mapper = mapper;
     }
 
     public async Task<FaturaCriacaoResultadoDto> FaturarPedidoAsync(int pedidoId)
     {
-        var existente = await _repo.GetByPedidoIdAsync(pedidoId);
-        if (existente != null) throw new ServiceException("Pedido já faturado.");
-
-        var pedido = await _pedidoClient.ObterPedidoAsync(pedidoId) ??
+        Fatura? pedidoJaFaturado = await this._repo.GetByPedidoIdAsync(pedidoId);
+        if (pedidoJaFaturado != null) throw new ServiceException("Pedido já faturado.");
+        PedidoResumo pedidoResumo = await this._pedidoClient.ObterPedidoAsync(pedidoId) ??
             throw new ServiceException("Pedido não encontrado.");
-
-        if (!string.Equals(pedido.Status, "Confirmado", StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(pedidoResumo.Status, "Confirmado", StringComparison.OrdinalIgnoreCase))
             throw new ServiceException("Pedido não confirmado.");
-
         string numero = GerarNumeroFatura(pedidoId);
 
-        Fatura fatura = new(pedido.Id, numero);
-        foreach (var item in pedido.Itens)
-            fatura.AdicionarItem(item.ProdutoId, item.Quantidade, item.PrecoUnitario);
+        Fatura fatura = new(pedidoResumo.Id, numero);
+        foreach (PedidoItemResumo resumoItemPedido in pedidoResumo.Itens)
+            fatura.AdicionarItem(resumoItemPedido.ProdutoId, resumoItemPedido.Quantidade, resumoItemPedido.PrecoUnitario);
 
         fatura.Validar();
-
         await _repo.AddAsync(fatura);
+        _ = this._reciboClient.EmitirReciboAsync(fatura.Id, fatura.Numero, fatura.Total);
 
-        _ = _reciboClient.EmitirReciboAsync(fatura.Id, fatura.Numero, fatura.Total);
-
-        return new FaturaCriacaoResultadoDto(fatura.Id, fatura.Numero, fatura.Total);
+       return this._mapper.Map<FaturaCriacaoResultadoDto>(fatura);
     }
 
     public async Task<FaturaDto?> ObterPorIdAsync(int id)
     {
-        var fatura = await _repo.GetByIdAsync(id);
-        return fatura == null ? null : Map(fatura);
+        Fatura? fatura = await this._repo.GetByIdAsync(id) ??
+            throw new ServiceException("Fatura não encontrada.");
+        return this._mapper.Map<FaturaDto>(fatura);
     }
 
     public async Task<FaturaDto?> ObterPorPedidoAsync(int pedidoId)
     {
-        var fatura = await _repo.GetByPedidoIdAsync(pedidoId);
-        return fatura == null ? null : Map(fatura);
+        Fatura? fatura = await this._repo.GetByPedidoIdAsync(pedidoId) ??
+            throw new ServiceException("Fatura não encontrada.");
+        return this._mapper.Map<FaturaDto>(fatura);
     }
-
-    private FaturaDto Map(Fatura f)
-        => new(
-            f.Id,
-            f.Numero,
-            f.PedidoId,
-            f.DataEmissao,
-            f.Total,
-            f.Itens.Select(i => new FaturaItemDto(i.ProdutoId, i.Quantidade, i.PrecoUnitario, i.Subtotal)),
-            f.Status.ToString());
 
     private string GerarNumeroFatura(int pedidoId)
         => $"FT-{DateTime.UtcNow:yyyyMMdd}-{pedidoId}-{Guid.NewGuid().ToString()[..6]}";
