@@ -3,7 +3,7 @@ using Microservice.Faturamento.Application.Interfaces;
 using Microservice.Faturamento.Application.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Microservice.Faturamento.Infrastructure.Clients;
+namespace Microservice.Faturamento.Application.Clients;
 
 public class PedidoConsultaClient : IPedidoConsultaClient
 {

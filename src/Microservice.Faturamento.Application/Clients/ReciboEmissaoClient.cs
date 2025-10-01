@@ -2,7 +2,7 @@ using System.Net.Http.Json;
 using Microservice.Faturamento.Application.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace Microservice.Faturamento.Infrastructure.Clients;
+namespace Microservice.Faturamento.Application.Clients;
 
 public class ReciboEmissaoClient : IReciboEmissaoClient
 {

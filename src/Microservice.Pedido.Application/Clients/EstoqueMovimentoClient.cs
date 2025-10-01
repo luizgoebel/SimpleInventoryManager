@@ -2,7 +2,7 @@ using Microservice.Pedido.Application.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
 
-namespace Microservice.Pedido.Infrastructure.Clients;
+namespace Microservice.Pedido.Application.Clients;
 
 public class EstoqueMovimentoClient : IEstoqueMovimentoClient
 {

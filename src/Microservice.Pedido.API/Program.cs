@@ -1,7 +1,7 @@
+using Microservice.Pedido.Application.Clients;
 using Microservice.Pedido.Application.Interfaces;
 using Microservice.Pedido.Application.Mapping;
 using Microservice.Pedido.Application.Services;
-using Microservice.Pedido.Infrastructure.Clients;
 using Microservice.Pedido.Infrastructure.Data.Context;
 using Microservice.Pedido.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
