@@ -1,12 +1,15 @@
 {
+  "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "Microservice.Faturamento.API": {
+    "FaturamentoApi": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:61296",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "https://localhost:61295;http://localhost:61296"
+      }
     }
   }
 }
