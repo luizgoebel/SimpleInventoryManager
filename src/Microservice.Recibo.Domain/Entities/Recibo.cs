@@ -11,13 +11,17 @@ public class Recibo : BaseModel<Recibo>
     public DateTime DataEmissao { get; private set; }
     public decimal ValorTotal { get; private set; }
 
-    public Recibo(int faturaId, string numero, decimal valor)
+    // Construtor para criação de domínio
+    public Recibo(int faturaId, string numero, decimal valorTotal)
     {
         FaturaId = faturaId;
         Numero = numero;
-        ValorTotal = valor;
+        ValorTotal = valorTotal;
         DataEmissao = DateTime.UtcNow;
     }
+
+    // Construtor sem parâmetros para EF Core
+    private Recibo() { }
 
     public void Validar()
     {

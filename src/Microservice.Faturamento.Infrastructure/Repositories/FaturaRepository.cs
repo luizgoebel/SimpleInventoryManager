@@ -7,27 +7,38 @@ namespace Microservice.Faturamento.Infrastructure.Repositories;
 
 public class FaturaRepository : IFaturaRepository
 {
-    private static readonly List<Fatura> _db = new();
-    protected readonly FaturaDbContext _ctx;
-    protected readonly DbSet<Fatura> _set;
+    private readonly FaturaDbContext _ctx;
+    private readonly DbSet<Fatura> _set;
 
-    public Task AddAsync(Fatura fatura)
+    public FaturaRepository(FaturaDbContext ctx)
     {
-        fatura.Id = _db.Count + 1;
-        _db.Add(fatura);
-        return Task.CompletedTask;
+        _ctx = ctx;
+        _set = ctx.Faturas;
     }
 
-    public Task<Fatura?> GetByIdAsync(int id)
-        => Task.FromResult(_db.FirstOrDefault(f => f.Id == id));
+    public async Task AddAsync(Fatura fatura)
+    {
+        await _set.AddAsync(fatura);
+        await _ctx.SaveChangesAsync();
+    }
 
-    public Task<Fatura?> GetByPedidoIdAsync(int pedidoId)
-        => Task.FromResult(_db.FirstOrDefault(f => f.PedidoId == pedidoId));
+    public async Task<Fatura?> GetByIdAsync(int id)
+    {
+        return await _set
+            .Include(f => f.Itens)
+            .FirstOrDefaultAsync(f => f.Id == id);
+    }
+
+    public async Task<Fatura?> GetByPedidoIdAsync(int pedidoId)
+    {
+        return await _set
+            .Include(f => f.Itens)
+            .FirstOrDefaultAsync(f => f.PedidoId == pedidoId);
+    }
 
     public async Task UpdateAsync(Fatura fatura)
     {
         _set.Update(fatura);
         await _ctx.SaveChangesAsync();
-        await Task.CompletedTask;
     }
 }

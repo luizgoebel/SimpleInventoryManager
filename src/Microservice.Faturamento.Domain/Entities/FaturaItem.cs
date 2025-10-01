@@ -22,6 +22,6 @@ public class FaturaItem : BaseModel<FaturaItem>
     {
         if (ProdutoId <= 0) throw new DomainException("Produto inválido.");
         if (Quantidade <= 0) throw new DomainException("Quantidade inválida.");
-        if (PrecoUnitario < 0) throw new DomainException("Preço inválido.");
+        if (PrecoUnitario <= 0) throw new DomainException("Preço inválido.");
     }
 }

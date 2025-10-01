@@ -17,7 +17,7 @@ builder.Services.AddAutoMapper(typeof(Microservice.Faturamento.Application.Mappi
 builder.Services.AddDbContext<FaturaDbContext>(o => o.UseInMemoryDatabase("FaturaDb"));
 
 builder.Services.AddScoped<IFaturamentoService, FaturamentoService>();
-builder.Services.AddSingleton<IFaturaRepository, FaturaRepository>();
+builder.Services.AddScoped<IFaturaRepository, FaturaRepository>();
 
 builder.Services.AddHttpClient<IPedidoConsultaClient, PedidoConsultaClient>(c =>
 {

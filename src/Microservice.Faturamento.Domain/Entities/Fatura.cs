@@ -14,7 +14,9 @@ public class Fatura : BaseModel<Fatura>
     public DateTime DataEmissao { get; private set; }
     public decimal Total { get; private set; }
     public FaturaStatus Status { get; private set; } = FaturaStatus.Emitida;
-    public IReadOnlyCollection<FaturaItem> Itens => _itens.AsReadOnly();
+
+    // Expor diretamente a lista como IReadOnlyCollection (sem wrapper AsReadOnly) para EF manipular via backing field
+    public IReadOnlyCollection<FaturaItem> Itens => _itens;
 
     public Fatura(int pedidoId, string numero)
     {
@@ -22,6 +24,8 @@ public class Fatura : BaseModel<Fatura>
         Numero = numero;
         DataEmissao = DateTime.UtcNow;
     }
+
+    private Fatura() { }
 
     public void AdicionarItem(int produtoId, int quantidade, decimal precoUnitario)
     {
@@ -39,6 +43,7 @@ public class Fatura : BaseModel<Fatura>
 
     public void Validar()
     {
+        RecalcularTotal();
         if (PedidoId <= 0) throw new DomainException("PedidoId inválido.");
         if (string.IsNullOrWhiteSpace(Numero)) throw new DomainException("Número inválido.");
         if (!_itens.Any()) throw new DomainException("Fatura deve conter itens.");

@@ -16,7 +16,7 @@ builder.Services.AddDbContext<ReciboDbContext>(o => o.UseInMemoryDatabase("Recib
 builder.Services.AddAutoMapper(typeof(Microservice.Recibo.Application.Mapping.ReciboProfile).Assembly);
 
 builder.Services.AddScoped<IReciboService, ReciboService>();
-builder.Services.AddSingleton<IReciboRepository, ReciboRepository>();
+builder.Services.AddScoped<IReciboRepository, ReciboRepository>();
 
 var app = builder.Build();
 

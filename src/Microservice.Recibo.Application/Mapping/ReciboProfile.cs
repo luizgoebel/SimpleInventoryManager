@@ -8,7 +8,6 @@ public class ReciboProfile : Profile
     public ReciboProfile()
     {
         CreateMap<Domain.Entities.Recibo, ReciboDto>()
-            .ConstructUsing(r => new ReciboDto(r.Id, r.Numero, r.FaturaId, r.DataEmissao, r.ValorTotal))
-            .ReverseMap();
+            .ConstructUsing(r => new ReciboDto(r.Id, r.Numero, r.FaturaId, r.DataEmissao, r.ValorTotal));
     }
 }
