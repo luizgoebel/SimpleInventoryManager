@@ -18,7 +18,9 @@ app.MapGet("/", () => Results.Ok(new
     {
         "/api/produtos/*",
         "/api/estoques/*",
-        "/api/pedidos/*"
+        "/api/pedidos/*",
+        "/api/faturamentos/*",
+        "/api/recibos/*"
     }
 }));
 
