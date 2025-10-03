@@ -8,7 +8,7 @@ using Microservice.Faturamento.Domain.Entities;
 using Shared.Application.Exceptions;
 using System.Collections.Generic;
 
-namespace Microservice.Faturamento.Application.Tests;
+namespace Microservice.Faturamento.Application.Tests.FaturamentoServiceTests;
 
 public class FaturamentoServiceTests
 {

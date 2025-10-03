@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 
-namespace Microservice.Pedido.Application.Tests
+namespace Microservice.Pedido.Application.Tests.PedidoServiceTests
 {
     public class PedidoServiceTests
     {
@@ -91,7 +91,7 @@ namespace Microservice.Pedido.Application.Tests
             };
             PedidoDto resp = await this._service.CriarAsync(dto);
             Assert.That(resp.Itens.Count, Is.EqualTo(2));
-            this._repo.Verify(r => r.AddAsync(It.IsAny<Microservice.Pedido.Domain.Entities.Pedido>()), Times.Once);
+            this._repo.Verify(r => r.AddAsync(It.IsAny<Domain.Entities.Pedido>()), Times.Once);
             this._estoqueClient.Verify(c => c.RegistrarSaidaAsync(1, 2), Times.Once);
             this._estoqueClient.Verify(c => c.RegistrarSaidaAsync(2, 1), Times.Once);
         }
@@ -100,14 +100,14 @@ namespace Microservice.Pedido.Application.Tests
         public void GetByIdAsync_Inexistente_DeveLancarServiceException()
         {
             this._repo.Setup(r => r.GetByIdWithItemsAsync(1))
-                .ReturnsAsync((Microservice.Pedido.Domain.Entities.Pedido)null);
+                .ReturnsAsync((Domain.Entities.Pedido)null);
             Assert.ThrowsAsync<ServiceException>(() => this._service.GetByIdAsync(1));
         }
 
         [Test]
         public async Task GetByIdAsync_Existente_DeveRetornarDto()
         {
-            Microservice.Pedido.Domain.Entities.Pedido pedido = new Microservice.Pedido.Domain.Entities.Pedido();
+            Domain.Entities.Pedido pedido = new Domain.Entities.Pedido();
             pedido.AdicionarItem(1, 1, 10m);
             this._repo.Setup(r => r.GetByIdWithItemsAsync(1)).ReturnsAsync(pedido);
             PedidoDto? dto = await this._service.GetByIdAsync(1);
@@ -119,31 +119,31 @@ namespace Microservice.Pedido.Application.Tests
         public void CancelarAsync_Inexistente_DeveLancarServiceException()
         {
             this._repo.Setup(r => r.GetByIdWithItemsAsync(1))
-                .ReturnsAsync((Microservice.Pedido.Domain.Entities.Pedido)null);
+                .ReturnsAsync((Domain.Entities.Pedido)null);
             Assert.ThrowsAsync<ServiceException>(() => this._service.CancelarAsync(1));
         }
 
         [Test]
         public async Task CancelarAsync_Pendente_DeveCancelar()
         {
-            Microservice.Pedido.Domain.Entities.Pedido pedido = new Microservice.Pedido.Domain.Entities.Pedido();
+            Domain.Entities.Pedido pedido = new Domain.Entities.Pedido();
             pedido.AdicionarItem(1, 1, 10m);
             this._repo.Setup(r => r.GetByIdWithItemsAsync(1)).ReturnsAsync(pedido);
             bool ok = await this._service.CancelarAsync(1);
             Assert.That(ok, Is.True);
-            this._repo.Verify(r => r.UpdateAsync(It.Is<Microservice.Pedido.Domain.Entities.Pedido>(p => p.Status.ToString() == "Cancelado")), Times.Once);
+            this._repo.Verify(r => r.UpdateAsync(It.Is<Domain.Entities.Pedido>(p => p.Status.ToString() == "Cancelado")), Times.Once);
         }
 
         [Test]
         public async Task CancelarAsync_JaCancelado_NaoAltera()
         {
-            Microservice.Pedido.Domain.Entities.Pedido pedido = new Microservice.Pedido.Domain.Entities.Pedido();
+            Domain.Entities.Pedido pedido = new Domain.Entities.Pedido();
             pedido.AdicionarItem(1, 1, 10m);
             pedido.Cancelar();
             this._repo.Setup(r => r.GetByIdWithItemsAsync(1)).ReturnsAsync(pedido);
             bool ok = await this._service.CancelarAsync(1);
             Assert.That(ok, Is.True);
-            this._repo.Verify(r => r.UpdateAsync(It.IsAny<Microservice.Pedido.Domain.Entities.Pedido>()), Times.Once);
+            this._repo.Verify(r => r.UpdateAsync(It.IsAny<Domain.Entities.Pedido>()), Times.Once);
         }
     }
 }

@@ -5,7 +5,7 @@ using Microservice.Estoque.Application.Mapping;
 using Microservice.Estoque.Application.Services;
 using Shared.Application.Exceptions;
 
-namespace Microservice.Estoque.Application.Tests;
+namespace Microservice.Estoque.Application.Tests.EstoqueServiceTests;
 
 public class EstoqueServiceTests
 {
@@ -23,29 +23,29 @@ public class EstoqueServiceTests
     [Test]
     public async Task CriarInicialSeNaoExisteAsync_NaoExiste_DeveCriar()
     {
-        this._repo.Setup(r => r.GetByProdutoIdAsync(1)).ReturnsAsync((Microservice.Estoque.Domain.Entities.Estoque?)null);
+        this._repo.Setup(r => r.GetByProdutoIdAsync(1)).ReturnsAsync((Domain.Entities.Estoque?)null);
         bool ok = await this._service.CriarInicialSeNaoExisteAsync(1);
         Assert.That(ok, Is.True);
-        this._repo.Verify(r => r.AddAsync(It.Is<Microservice.Estoque.Domain.Entities.Estoque>(e => e.ProdutoId == 1)), Times.Once);
+        this._repo.Verify(r => r.AddAsync(It.Is<Domain.Entities.Estoque>(e => e.ProdutoId == 1)), Times.Once);
     }
 
     [Test]
     public async Task CriarInicialSeNaoExisteAsync_JaExiste_DeveNaoDuplicar()
     {
-        this._repo.Setup(r => r.GetByProdutoIdAsync(1)).ReturnsAsync(new Microservice.Estoque.Domain.Entities.Estoque { ProdutoId = 1, Quantidade = 5 });
+        this._repo.Setup(r => r.GetByProdutoIdAsync(1)).ReturnsAsync(new Domain.Entities.Estoque { ProdutoId = 1, Quantidade = 5 });
         await this._service.CriarInicialSeNaoExisteAsync(1);
-        this._repo.Verify(r => r.AddAsync(It.IsAny<Microservice.Estoque.Domain.Entities.Estoque>()), Times.Never);
+        this._repo.Verify(r => r.AddAsync(It.IsAny<Domain.Entities.Estoque>()), Times.Never);
     }
 
     [Test]
     public async Task EntradaAsync_EstoqueInexistente_DeveCriarEAdicionar()
     {
-        this._repo.Setup(r => r.GetByProdutoIdAsync(1)).ReturnsAsync((Microservice.Estoque.Domain.Entities.Estoque?)null);
+        this._repo.Setup(r => r.GetByProdutoIdAsync(1)).ReturnsAsync((Domain.Entities.Estoque?)null);
         MovimentoEstoqueDto dto = new MovimentoEstoqueDto { ProdutoId = 1, Quantidade = 3 };
         bool ok = await this._service.EntradaAsync(dto);
         Assert.That(ok, Is.True);
-        this._repo.Verify(r => r.AddAsync(It.Is<Microservice.Estoque.Domain.Entities.Estoque>(e => e.Quantidade == 0)), Times.Once);
-        this._repo.Verify(r => r.UpdateAsync(It.Is<Microservice.Estoque.Domain.Entities.Estoque>(e => e.Quantidade == 3)), Times.Once);
+        this._repo.Verify(r => r.AddAsync(It.Is<Domain.Entities.Estoque>(e => e.Quantidade == 0)), Times.Once);
+        this._repo.Verify(r => r.UpdateAsync(It.Is<Domain.Entities.Estoque>(e => e.Quantidade == 3)), Times.Once);
     }
 
     [Test]
@@ -65,7 +65,7 @@ public class EstoqueServiceTests
     [Test]
     public void SaidaAsync_QuantidadeMaiorQueSaldo_DeveLancarServiceException()
     {
-        this._repo.Setup(r => r.GetByProdutoIdAsync(1)).ReturnsAsync(new Microservice.Estoque.Domain.Entities.Estoque { ProdutoId = 1, Quantidade = 2 });
+        this._repo.Setup(r => r.GetByProdutoIdAsync(1)).ReturnsAsync(new Domain.Entities.Estoque { ProdutoId = 1, Quantidade = 2 });
         MovimentoEstoqueDto dto = new MovimentoEstoqueDto { ProdutoId = 1, Quantidade = 5 };
         Assert.ThrowsAsync<ServiceException>(() => this._service.SaidaAsync(dto));
     }
@@ -73,11 +73,11 @@ public class EstoqueServiceTests
     [Test]
     public async Task SaidaAsync_QuantidadeValida_DeveAtualizar()
     {
-        Microservice.Estoque.Domain.Entities.Estoque estoque = new Microservice.Estoque.Domain.Entities.Estoque { ProdutoId = 1, Quantidade = 5 };
+        Domain.Entities.Estoque estoque = new Domain.Entities.Estoque { ProdutoId = 1, Quantidade = 5 };
         this._repo.Setup(r => r.GetByProdutoIdAsync(1)).ReturnsAsync(estoque);
         MovimentoEstoqueDto dto = new MovimentoEstoqueDto { ProdutoId = 1, Quantidade = 3 };
         bool ok = await this._service.SaidaAsync(dto);
         Assert.That(ok, Is.True);
-        this._repo.Verify(r => r.UpdateAsync(It.Is<Microservice.Estoque.Domain.Entities.Estoque>(e => e.Quantidade == 2)), Times.Once);
+        this._repo.Verify(r => r.UpdateAsync(It.Is<Domain.Entities.Estoque>(e => e.Quantidade == 2)), Times.Once);
     }
 }
