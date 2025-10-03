@@ -16,6 +16,7 @@
     <ProjectReference Include="..\Microservice.Pedido.Domain\Microservice.Pedido.Domain.csproj" />
     <ProjectReference Include="..\Shared.Application\Shared.Application.csproj" />
     <ProjectReference Include="..\Shared.Domain\Shared.Domain.csproj" />
+    <ProjectReference Include="..\Shared.Messaging\Shared.Messaging.csproj" />
   </ItemGroup>
 	
 </Project>

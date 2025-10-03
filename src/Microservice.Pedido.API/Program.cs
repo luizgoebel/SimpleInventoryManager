@@ -6,6 +6,8 @@ using Microservice.Pedido.Infrastructure.Data.Context;
 using Microservice.Pedido.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microservice.Pedido.API.Data.Seed;
+using Shared.Messaging;
+using Shared.Messaging.InMemory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,9 @@ builder.Services.AddAutoMapper(typeof(PedidoProfile).Assembly);
 
 builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
 builder.Services.AddScoped<IPedidoService, PedidoService>();
+
+// EventBus in-memory singleton
+builder.Services.AddSingleton<IEventBus, InMemoryEventBus>();
 
 builder.Services.AddHttpClient<IEstoqueMovimentoClient, EstoqueMovimentoClient>(c =>
 {

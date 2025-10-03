@@ -14,8 +14,10 @@
 
 	<ItemGroup>
     <ProjectReference Include="..\Microservice.Faturamento.Domain\Microservice.Faturamento.Domain.csproj" />
+    <ProjectReference Include="..\Microservice.Pedido.Application\Microservice.Pedido.Application.csproj" />
     <ProjectReference Include="..\Shared.Application\Shared.Application.csproj" />
     <ProjectReference Include="..\Shared.Domain\Shared.Domain.csproj" />
+    <ProjectReference Include="..\Shared.Messaging\Shared.Messaging.csproj" />
   </ItemGroup>
 	
 </Project>

@@ -3,6 +3,8 @@ using Microservice.Pedido.Application.DTOs;
 using Microservice.Pedido.Application.Interfaces;
 using Microservice.Pedido.Domain.Entities;
 using Shared.Application.Exceptions;
+using Shared.Messaging;
+using Microservice.Pedido.Application.Events;
 
 namespace Microservice.Pedido.Application.Services;
 
@@ -11,12 +13,14 @@ public class PedidoService : IPedidoService
     private readonly IPedidoRepository _repo;
     private readonly IMapper _mapper;
     private readonly IEstoqueMovimentoClient _estoqueClient;
+    private readonly IEventBus _eventBus;
 
-    public PedidoService(IPedidoRepository repo, IMapper mapper, IEstoqueMovimentoClient estoqueClient)
+    public PedidoService(IPedidoRepository repo, IMapper mapper, IEstoqueMovimentoClient estoqueClient, IEventBus eventBus)
     {
         this._repo = repo;
         this._mapper = mapper;
         this._estoqueClient = estoqueClient;
+        this._eventBus = eventBus;
     }
 
     public async Task<PedidoDto> CriarAsync(PedidoCriacaoDto dto)
@@ -40,6 +44,14 @@ public class PedidoService : IPedidoService
             await this._estoqueClient.RegistrarSaidaAsync(item.ProdutoId, item.Quantidade);
 
         await this._repo.AddAsync(pedido);
+
+        var evt = new PedidoCriadoIntegrationEvent(
+            pedido.Id,
+            pedido.Total,
+            pedido.Itens.Select(i => new PedidoItemCriadoEventDto(i.ProdutoId, i.Quantidade, i.PrecoUnitario))
+        );
+        await _eventBus.PublishAsync(evt);
+
         return this._mapper.Map<PedidoDto>(pedido);
     }
 

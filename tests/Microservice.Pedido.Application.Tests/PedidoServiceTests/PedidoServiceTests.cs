@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using Shared.Messaging; // novo
+using System.Threading; // adiciona cancellation token
 
 namespace Microservice.Pedido.Application.Tests.PedidoServiceTests
 {
@@ -15,6 +17,7 @@ namespace Microservice.Pedido.Application.Tests.PedidoServiceTests
     {
         private readonly Mock<IPedidoRepository> _repo = new Mock<IPedidoRepository>();
         private readonly Mock<IEstoqueMovimentoClient> _estoqueClient = new Mock<IEstoqueMovimentoClient>();
+        private readonly Mock<IEventBus> _eventBus = new Mock<IEventBus>(); // novo
         private readonly IMapper _mapper;
         private readonly PedidoService _service;
 
@@ -22,7 +25,7 @@ namespace Microservice.Pedido.Application.Tests.PedidoServiceTests
         {
             MapperConfiguration cfg = new MapperConfiguration(c => c.AddProfile<PedidoProfile>());
             this._mapper = cfg.CreateMapper();
-            this._service = new PedidoService(this._repo.Object, this._mapper, this._estoqueClient.Object);
+            this._service = new PedidoService(this._repo.Object, this._mapper, this._estoqueClient.Object, _eventBus.Object); // adiciona eventBus
         }
 
         [SetUp]
@@ -30,6 +33,7 @@ namespace Microservice.Pedido.Application.Tests.PedidoServiceTests
         {
             this._repo.Invocations.Clear();
             this._estoqueClient.Invocations.Clear();
+            this._eventBus.Invocations.Clear(); // limpar
         }
 
         [Test]
@@ -79,7 +83,7 @@ namespace Microservice.Pedido.Application.Tests.PedidoServiceTests
         }
 
         [Test]
-        public async Task CriarAsync_ItensValidos_DeveCriarPedidoEChamarEstoque()
+        public async Task CriarAsync_ItensValidos_DeveCriarPedidoEChamarEstoqueEPublicarEvento()
         {
             PedidoCriacaoDto dto = new PedidoCriacaoDto
             {
@@ -94,6 +98,7 @@ namespace Microservice.Pedido.Application.Tests.PedidoServiceTests
             this._repo.Verify(r => r.AddAsync(It.IsAny<Domain.Entities.Pedido>()), Times.Once);
             this._estoqueClient.Verify(c => c.RegistrarSaidaAsync(1, 2), Times.Once);
             this._estoqueClient.Verify(c => c.RegistrarSaidaAsync(2, 1), Times.Once);
+            this._eventBus.Verify(b => b.PublishAsync(It.IsAny<Shared.Messaging.IntegrationEvent>(), It.IsAny<CancellationToken>()), Times.Once); // verifica publicação
         }
 
         [Test]
