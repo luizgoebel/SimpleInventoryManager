@@ -5,7 +5,7 @@ using Microservice.Estoque.Application.DTOs;
 namespace Microservice.Estoque.API.Controllers;
 
 [ApiController]
-[Route("api/estoques")]
+[Route("api/estoque")]
 public class EstoqueController : ControllerBase
 {
     private readonly IEstoqueService _service;
